@@ -1,0 +1,32 @@
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Django stuff
+db.sqlite3
+*.log
+local_settings.py
+
+# Environment variables
+.env
+
+# Editor/IDE files
+.vscode/
+*.swp
+
+# Test, coverage, and report files
+.pytest_cache/
+.coverage
+htmlcov/
