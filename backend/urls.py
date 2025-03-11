@@ -20,6 +20,5 @@ from graphene_django.views import GraphQLView
 from socialmedia.schema import schema
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', GraphQLView.as_view(graphiql=True, schema=schema)),
 ]
