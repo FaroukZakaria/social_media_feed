@@ -19,6 +19,20 @@ class CommentType(DjangoObjectType):
         fields = ("id", "post", "user", "text", "created_at")
 
 
+from graphene_django import DjangoObjectType
+from .models import Like, Share
+
+class LikeType(DjangoObjectType):
+    class Meta:
+        model = Like
+        fields = ("id", "user", "post", "created_at")
+
+class ShareType(DjangoObjectType):
+    class Meta:
+        model = Share
+        fields = ("id", "user", "post", "shared_at")
+
+
 
 class Query(graphene.ObjectType):
     all_posts = graphene.List(PostType)
@@ -30,6 +44,11 @@ class Query(graphene.ObjectType):
     all_comments = graphene.List(CommentType)
     comment_by_id = graphene.Field(CommentType, id=graphene.Int(required=True))
 
+    all_likes = graphene.List(LikeType)
+    like_by_id = graphene.Field(LikeType, id=graphene.Int(required=True))
+
+    all_shares = graphene.List(ShareType)
+    share_by_id = graphene.Field(ShareType, id=graphene.Int(required=True))
 
     def resolve_all_posts(root, info):
         return Post.objects.all()
@@ -49,6 +68,18 @@ class Query(graphene.ObjectType):
     
     def resolve_comment_by_id(root, info, id):
         return Comment.objects.get(pk=id)
+    
+    def resolve_all_likes(root, info):
+        return Like.objects.all()
+    
+    def resolve_like_by_id(root, info, id):
+        return Like.objects.get(pk=id)
+    
+    def resolve_all_shares(root, info):
+        return Share.objects.all()
+    
+    def resolve_share_by_id(root, info, id):
+        return Share.objects.get(pk=id)
 
 class CreateUser(graphene.Mutation):
     class Arguments:
@@ -88,10 +119,39 @@ class CreateComment(graphene.Mutation):
         comment = Comment.objects.create(post=post, user=user, text=text)
         return CreateComment(comment=comment)
 
+
+class CreateLike(graphene.Mutation):
+    class Arguments:
+        user_id = graphene.Int(required=True)
+        post_id = graphene.Int(required=True)
+    
+    like = graphene.Field(LikeType)
+    
+    def mutate(root, info, user_id, post_id):
+        user = User.objects.get(pk=user_id)
+        post = Post.objects.get(pk=post_id)
+        like = Like.objects.create(user=user, post=post)
+        return CreateLike(like=like)
+
+class CreateShare(graphene.Mutation):
+    class Arguments:
+        user_id = graphene.Int(required=True)
+        post_id = graphene.Int(required=True)
+    
+    share = graphene.Field(ShareType)
+    
+    def mutate(root, info, user_id, post_id):
+        user = User.objects.get(pk=user_id)
+        post = Post.objects.get(pk=post_id)
+        share = Share.objects.create(user=user, post=post)
+        return CreateShare(share=share)
+
 class Mutation(graphene.ObjectType):
     create_post = CreatePost.Field()
     create_user = CreateUser.Field()
     create_comment = CreateComment.Field()
+    create_like = CreateLike.Field()
+    create_share = CreateShare.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
