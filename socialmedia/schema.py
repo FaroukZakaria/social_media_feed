@@ -1,11 +1,6 @@
 import graphene
 from graphene_django import DjangoObjectType
-from .models import Post, User, Comment
-
-class PostType(DjangoObjectType):
-    class Meta:
-        model = Post
-        fields = ("id", "title", "content", "created_at")
+from .models import Post, User, Comment, Like, Share
 
 
 class UserType(DjangoObjectType):
@@ -13,14 +8,16 @@ class UserType(DjangoObjectType):
         model = User
         fields = ("id", "username", "email", "created_at")
 
+
+class PostType(DjangoObjectType):
+    class Meta:
+        model = Post
+        fields = ("id", "title", "content", "created_at", "user", "likes", "comments", "shares")
+
 class CommentType(DjangoObjectType):
     class Meta:
         model = Comment
         fields = ("id", "post", "user", "text", "created_at")
-
-
-from graphene_django import DjangoObjectType
-from .models import Like, Share
 
 class LikeType(DjangoObjectType):
     class Meta:
@@ -97,11 +94,13 @@ class CreatePost(graphene.Mutation):
     class Arguments:
         title = graphene.String(required=True)
         content = graphene.String(required=True)
+        user_id = graphene.Int(required=True)
 
     post = graphene.Field(PostType)
 
-    def mutate(root, info, title, content):
-        post = Post.objects.create(title=title, content=content)
+    def mutate(root, info, title, content, user_id):
+        user = User.objects.get(pk=user_id)
+        post = Post.objects.create(title=title, content=content, user=user)
         return CreatePost(post=post)
 
 
