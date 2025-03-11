@@ -18,5 +18,8 @@ COPY . .
 # Optional: collect static files if using them
 RUN python manage.py collectstatic --noinput
 
+# Expose the port the application will run on
+EXPOSE 8000
+
 # Use Gunicorn for production (don't use "python manage.py runserver")
 CMD gunicorn backend.wsgi:application --bind 0.0.0.0:$PORT
