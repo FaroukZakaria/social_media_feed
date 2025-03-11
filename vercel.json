@@ -1,9 +1,5 @@
 {
-    "build": {
-      "docker": "Dockerfile"
-    },
-    "routes": [
-      { "src": "/(.*)", "dest": "/" }
-    ]
-  }
-  
+  "routes": [
+    { "src": "/(.*)", "dest": "/" }
+  ]
+}
