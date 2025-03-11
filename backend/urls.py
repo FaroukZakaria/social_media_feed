@@ -21,5 +21,5 @@ from socialmedia.schema import schema
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("graphql/", GraphQLView.as_view(graphiql=True, schema=schema)),
+    path('', GraphQLView.as_view(graphiql=True, schema=schema)),
 ]
